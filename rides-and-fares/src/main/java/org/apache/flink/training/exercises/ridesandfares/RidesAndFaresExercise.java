@@ -36,6 +36,11 @@ import org.apache.flink.training.exercises.common.sources.TaxiRideGenerator;
 import org.apache.flink.training.exercises.common.utils.MissingSolutionException;
 import org.apache.flink.util.Collector;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import static java.util.Objects.nonNull;
+
 /**
  * The Stateful Enrichment exercise from the Flink training.
  *
@@ -118,7 +123,8 @@ public class RidesAndFaresExercise {
         public void flatMap1(TaxiRide ride, Collector<RideAndFare> out) throws Exception {
 
             TaxiFare fare = fareState.value();
-            if (fare != null) {
+
+            if (nonNull(fare)) {
                 fareState.clear();
                 out.collect(new RideAndFare(ride, fare));
             } else {
@@ -130,8 +136,7 @@ public class RidesAndFaresExercise {
         public void flatMap2(TaxiFare fare, Collector<RideAndFare> out) throws Exception {
 
             TaxiRide ride = rideState.value();
-
-            if (ride != null) {
+            if (nonNull(fare)) {
                 rideState.clear();
                 out.collect(new RideAndFare(ride, fare));
             } else {
