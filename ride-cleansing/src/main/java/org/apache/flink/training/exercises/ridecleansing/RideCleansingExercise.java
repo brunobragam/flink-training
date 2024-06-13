@@ -26,7 +26,10 @@ import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.training.exercises.common.datatypes.TaxiRide;
 import org.apache.flink.training.exercises.common.sources.TaxiRideGenerator;
-import org.apache.flink.training.exercises.common.utils.MissingSolutionException;
+
+import java.util.stream.Stream;
+
+import static org.apache.flink.training.exercises.common.utils.GeoUtils.isInNYC;
 
 /**
  * The Ride Cleansing exercise from the Flink training.
@@ -58,12 +61,6 @@ public class RideCleansingExercise {
         job.execute();
     }
 
-    /**
-     * Creates and executes the long rides pipeline.
-     *
-     * @return {JobExecutionResult}
-     * @throws Exception which occurs during job execution.
-     */
     public JobExecutionResult execute() throws Exception {
 
         // set up streaming execution environment
@@ -79,8 +76,11 @@ public class RideCleansingExercise {
     /** Keep only those rides and both start and end in NYC. */
     public static class NYCFilter implements FilterFunction<TaxiRide> {
         @Override
-        public boolean filter(TaxiRide taxiRide) throws Exception {
-            throw new MissingSolutionException();
+        public boolean filter(TaxiRide taxiRide) {
+
+            return Stream.of(taxiRide)
+                        .anyMatch(t ->
+                                (isInNYC(t.startLon, t.startLat) && isInNYC(t.endLon, t.endLat) ));
         }
     }
 }
